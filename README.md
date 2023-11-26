@@ -20,23 +20,132 @@ User Notification: The central server or user devices receive the gas level data
 Maintenance Reminders: The system can also provide maintenance reminders based on sensor data, indicating when to perform routine maintenance checks on LPG equipment
 
 
-FLOWCHART:
+**FLOWCHART:**
 
 ![Screenshot 2023-11-22 112453](https://github.com/ShramithKumar/IOT-BASED-LPG-GAS-MAINTENANCE-AND-NOTIFICATION-/assets/149752667/49197b99-924f-413b-9a7d-0d0428034d8e)
 
-MINDMAP:
+**MINDMAP:**
 ![Screenshot 2023-11-22 113024](https://github.com/ShramithKumar/IOT-BASED-LPG-GAS-MAINTENANCE-AND-NOTIFICATION-/assets/149752667/c5413a07-2a02-439b-b586-5f913b8d8657)
 
-BLOCK DIAGRAM:
+**BLOCK DIAGRAM:**
 
 ![Screenshot 2023-11-22 113102](https://github.com/ShramithKumar/IOT-BASED-LPG-GAS-MAINTENANCE-AND-NOTIFICATION-/assets/149752667/5abae7f1-0a59-4628-8288-a2c8154b56ad)
 
-CIRCUIT DIAGRAM:
+**CIRCUIT DIAGRAM:**
 
 
 ![Screenshot 2023-11-22 113158](https://github.com/ShramithKumar/IOT-BASED-LPG-GAS-MAINTENANCE-AND-NOTIFICATION-/assets/149752667/07e9cbf1-3780-42ba-af2b-815631c54c31)
 
-ALGORITHM: Step 1: Setup the Hardware
+**CODE:**
+
+#include <SoftwareSerial.h>
+
+SoftwareSerial SIM900(10, 11);
+
+// Define the pin for the MQ-5 gas sensor
+
+int gasSensorPin = A0;    // Analog pin A0 for sensor output
+
+int buzzerPin = 3;        // Digital pin 8 for the piezo buzzer
+
+String f1001 = "+91__________"; // cell phone number
+
+String f1002 = "+91__________"; 
+
+
+void setup() 
+{
+  Serial.begin(9600);  
+  
+  delay(2000);   // Initialize serial communication
+  
+  pinMode(gasSensorPin, INPUT); // Set the sensor pin as INPUT
+  
+  pinMode(buzzerPin, OUTPUT); 
+  
+  Serial.begin(9600); // Nodemcu is connected over here
+        
+  SIM900.begin(9600); // original 19200. while enter 9600 for sim900A
+                      // Init SPI bus
+           // Set the buzzer pin as OUTPUT
+}
+
+void loop()
+{
+  int sensorValue = analogRead(gasSensorPin); // Read sensor value
+
+  // Print the sensor value to the Serial Monitor
+  
+  Serial.print("Gas Sensor Value: ");
+  
+  Serial.println(sensorValue);
+
+  int threshold = 120; // Set a threshold value (adjust as needed)
+
+  // If the sensor value crosses the threshold, indicate gas leakage
+  if (sensorValue > threshold)
+  
+   { sendsms(" GAS DETECTED PLEASE TAKE CAUTION", f1001);
+          delay(1000);      
+    Serial.println("Gas Leakage Detected!");
+     
+      // Sound the buzzer
+
+    digitalWrite(buzzerPin, HIGH);
+    
+    delay(1000); // Buzz for 1 second
+    
+    digitalWrite(buzzerPin, LOW);
+    
+    delay(1000); // Wait for 1 second
+    
+    
+  } 
+  
+  else 
+  {
+    digitalWrite(buzzerPin, LOW); // Turn off the buzzer if no gas leakage
+  }
+}
+
+void sendsms(String message, String number)
+
+{
+String mnumber = "AT + CMGS = \""+number+"\""; 
+
+   SIM900.print("AT+CMGF=1\r");                  
+   
+  delay(1000);
+  
+ SIM900.println(mnumber);  // recipient's mobile number, in international format
+
+  delay(1000);
+  
+  SIM900.println(message);                         // message to send
+  
+  delay(1000);
+  
+  SIM900.println((char)26);                        // End AT command with a ^Z, ASCII code 26
+  
+  delay(1000); 
+  
+  SIM900.println();
+  
+  delay(100);                                     // give module time to send SMS
+  
+ // SIM900power();  
+}
+
+**RESULT:**
+
+![output](https://github.com/ShramithKumar/IOT-BASED-LPG-GAS-MAINTENANCE-AND-NOTIFICATION-/assets/149752667/d9912748-372f-40cb-a917-acf97952ff14)
+
+![output2](https://github.com/ShramithKumar/IOT-BASED-LPG-GAS-MAINTENANCE-AND-NOTIFICATION-/assets/149752667/59644ef1-94f2-485e-831f-5fa9fa90cacb)
+
+
+**ALGORITHM:**
+
+Step 1: Setup the Hardware
 
 Step 2: Program the Arduino
 
@@ -46,7 +155,7 @@ Step 4: Deploy the System • Mount the gas sensor and GSM SIM module in an appr
 
 Step 5: Monitor and Maintain • Regularly check the GSM SIM module for SMS alerts indicating gas leakage. • Periodically calibrate the gas sensor to maintain accuracy. • Ensure the power supply remains connected and functional. • Replace the GSM SIM module if necessary.
 
-ADVANTAGES:
+**ADVANTAGES:**
 
 Safety Improvement: Early detection of leaks or other issues can prevent accidents and enhance overall safety. Automatic shut-off systems can be implemented to stop gas flow in case of a leak, minimizing potential hazards.
 
@@ -60,7 +169,7 @@ Remote Monitoring: Advanced notification systems may allow for remote monitoring
 
 Environmental Impact: Proper maintenance can contribute to reducing the environmental impact by preventing leaks and minimizing emissions.
 
-DISADVANTAGES:
+**DISADVANTAGES:**
 
 Cost of Implementation: Installing and maintaining notification systems can be expensive, especially for small businesses or residential users.
 
@@ -74,7 +183,7 @@ Maintenance Costs: While maintenance can prevent major issues, it also comes wit
 
 Limited Applicability: In some cases, the benefits of advanced notification systems may not justify the costs, especially in smaller or less critical installations.
 
-LIMITATION:
+**LIMITATION:**
 
 Technology Dependence: Many notification systems are reliant on technology, such as sensors and communication networks. Dependence on these technologies can introduce vulnerabilities, especially in areas with inconsistent power or limited network coverage.
 
@@ -100,7 +209,7 @@ Response Time: The effectiveness of a notification system is also influenced by 
 
 Environmental Factors: Environmental conditions, such as extreme temperatures or harsh weather, may affect the performance of sensors and other components in the notification system.
 
-APPLICATIONS:
+**APPLICATIONS:**
 
 Residential Use: In homes that use LPG for cooking or heating, maintenance and notification systems can provide early detection of leaks or malfunctions, enhancing safety for residents.
 
